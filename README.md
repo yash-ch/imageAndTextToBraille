@@ -12,29 +12,31 @@ $ pip install imagetobrailleart
 ```
 Note that this package requires at least Python 3.3, so if your default Python installation is still Python 2, make sure you use pip3.
 
-openCV is necessary for this library. If it is not installed then please install it.
-```
-$ pip install opencv-python
-``` 
-I am using 4.5.3.56 version.
+openCV and pillow are necessary for this library. They will be automatically installed in package. If it is not installed or not working then follow these commands.
 
-Pillow is also necessary for this library. If it is not installed then please install it.
 ```
-$ pip install pillow
+$ pip install opencv-python==4.5.3.56
 ``` 
-I am using 8.3.1 version.
+
+```
+$ pip install pillow==8.3.1
+``` 
 
 Again, use python3 if necessary.
 
 # Usage
 
 You can either use ```imagetobraille``` or ```texttobraille```
+
 Import imagetobrailleart to start using it.
+
+### Image to Braille
 
 ```
 imagetobraille("location_of_image", size = 100, inverse = 0)
 ```
-100 is the minimum we recommend and to inverse the image use 1 and if you don't want ot inverse it then use 0 or left it blank.
+100 is the minimum size we recommend and to inverse the image use 1 and if you don't want ot inverse it then use 0 or left it blank.
+
 Example to print face of a girl:
 ```
 >>> import imagetobrailleart as itb
@@ -43,10 +45,13 @@ Example to print face of a girl:
 ```
 ![GIRL braille art](https://i.imgur.com/XYxyM7b.png)
 
+### Text to Braille
+
 ```
 texttobraille("font_location","text", size = 100, inverse = 0)
 ```
 To inverse the image use 1 and if you don't want ot inverse it then use 0 or left it blank.
+
 Example to print HEY:
 ```
 >>> import imagetobrailleart as itb
