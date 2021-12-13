@@ -3,35 +3,34 @@
   
 # import the required modules
 import cv2
-from braillegraph import vertical_graph, horizontal_graph
 from PIL import Image, ImageDraw, ImageFont
 import os
 
-# Read the image
-def brailletoart(image_name = "face2", size =100, inverse = "n", pngorjpg = "j" ):
-    
-    if pngorjpg == "j":
-            image_name = "images\\"+ image_name + ".jpg"
-    elif pngorjpg == "p":
-            image_name = "images\\"+ image_name + ".png"         
+from modifiedbraillegraph import vertical_graph, horizontal_graph
 
-    img = cv2.imread(image_name, 0)
+# Read the image
+def imagetobraille(image_location = "", size =100, inverse = "n"):
+    
+    if image_location == "":
+        return "Image location not specified"
+
+    img = cv2.imread(image_location, 0)
 
     # Apply median blur
-    img = cv2.medianBlur(img, 5)
+    try:
+        img = cv2.medianBlur(img, 5)
+    except:
+        return "Image location incorrect"
     
     # Apply MEAN thresholding to get refined edges
     image = cv2.adaptiveThreshold(
         img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
-
-    # cv2.imshow("image", image)
     
     # Preserve the ratio
     ratio = len(image)/len(image[0])
     # Assign new width and calculate new height
     new_height = size
     new_width = int(ratio*new_height)
-    # print(f"{new_width} {new_height}")
     # Resize the image
     image = cv2.resize(image, (new_height, new_width))
 
@@ -43,7 +42,7 @@ def brailletoart(image_name = "face2", size =100, inverse = "n", pngorjpg = "j" 
         filltwo = 0
     # Iterate over the array and print the dark pixels
     # or we can use any other symbol too.
-    a = ""
+    outputart = ""
     b=0
 
     pixellist1 = []
@@ -60,7 +59,6 @@ def brailletoart(image_name = "face2", size =100, inverse = "n", pngorjpg = "j" 
     for i in range(len(image)):
 
         for j in range(len(image[0])):
-            # a += "   " if image[i, j] < 200 else ".  "
             if b==0:
                 if image[i, j] < 200:
                     pixellist1.append(0)
@@ -133,13 +131,13 @@ def brailletoart(image_name = "face2", size =100, inverse = "n", pngorjpg = "j" 
                 for l in range(0,len(noofdotslist1)):
                     
                     if noofdotslist1[l] or noofdotslist2[l] or noofdotslist3[l] or noofdotslist4[l] != 0:
-                        a += vertical_graph([noofdotslist1[l], noofdotslist2[l], noofdotslist3[l], noofdotslist4[l]])
+                        outputart += vertical_graph([noofdotslist1[l], noofdotslist2[l], noofdotslist3[l], noofdotslist4[l]])
                     else:    
-                        a +=" "
+                        outputart +=" "
             except:
                 print("KYA HUA")
 
-            a += "\n"  
+            outputart += "\n"  
 
             pixellist1.clear()
             pixellist2.clear()
@@ -153,42 +151,16 @@ def brailletoart(image_name = "face2", size =100, inverse = "n", pngorjpg = "j" 
             
             b=0
 
+    # cv2.waitKey(0)
+    return outputart
 
-    print("\n"*5)
-    print(a)
-    # outputimg
-    print("Done")
-    cv2.waitKey(0)
+# def texttobraille(text : str, size = 100, inverse = "n"):
+#     textimg = Image.open('files\\back.jpg')
+#     d1 = ImageDraw.Draw(textimg)
+#     myFont = ImageFont.truetype("files\\font.ttf", 200)
+#     d1.text((5, 5), text.upper(), fill =(0, 0, 0), font= myFont)
 
-def textedimage(text : str):
-    textimg = Image.open('images/back.jpg')
-    d1 = ImageDraw.Draw(textimg)
-    myFont = ImageFont.truetype("font.ttf", 100)
-    d1.text((5, 5), text.upper(), fill =(0, 0, 0), font= myFont)
-
-    textimg.save("images\\{}.jpg".format(text))
-
-
-while True:
-    try:
-        command = input("Enter command (t if text none if not text, image/text name, size, y for inverse and y for non inverse, j for jpg and p for png,): ")
-        commandlist = command.split()
-
-        if commandlist[0] == "t":
-            
-            texttoprint = ""
-            for text in range(1,len(commandlist)-2):
-                texttoprint = texttoprint + "{} ".format(commandlist[text])
-            
-            texttoprint = texttoprint[:-1]
-
-            textedimage(texttoprint)
-
-            brailletoart(texttoprint, int(commandlist[-2]), commandlist[-1])    
-            os.remove("images\\{}.jpg".format(texttoprint))
-        else:
-            brailletoart(commandlist[0], commandlist[1], int(commandlist[2]), commandlist[3])    
-
-    except BaseException as error:
-        print('An exception occurred: {}'.format(error))
-        continue
+#     textimg.save("files\\{}.jpg".format(text))
+#     brailleart = imagetobraille("files\\"+text+".jpg", size, inverse)    
+#     os.remove("files\\{}.jpg".format(text))
+#     return brailleart
