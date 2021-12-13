@@ -5,11 +5,12 @@
 import cv2
 from PIL import Image, ImageDraw, ImageFont
 import os
+import requests
 
 from modifiedbraillegraph import vertical_graph, horizontal_graph
 
 # Read the image
-def imagetobraille(image_location = "", size =100, inverse = "n"):
+def imagetobraille(image_location = "", size =100, inverse = 0):
     
     if image_location == "":
         return "Image location not specified"
@@ -37,7 +38,7 @@ def imagetobraille(image_location = "", size =100, inverse = "n"):
     fillone = 0
     filltwo = 2
 
-    if inverse == "y":
+    if inverse == 1:
         fillone = 2
         filltwo = 0
     # Iterate over the array and print the dark pixels
@@ -154,13 +155,20 @@ def imagetobraille(image_location = "", size =100, inverse = "n"):
     # cv2.waitKey(0)
     return outputart
 
-# def texttobraille(text : str, size = 100, inverse = "n"):
-#     textimg = Image.open('files\\back.jpg')
-#     d1 = ImageDraw.Draw(textimg)
-#     myFont = ImageFont.truetype("files\\font.ttf", 200)
-#     d1.text((5, 5), text.upper(), fill =(0, 0, 0), font= myFont)
+#download font file in .tff format
+def texttobraille(font_location : str,text : str, size = 100, inverse = 0):
+    image_url = "https://i.imgur.com/CykXjV9.jpg"    
+    im = Image.open(requests.get(image_url, stream=True).raw)
+    im.save("imagetobrailleartblankpic.jpg")
 
-#     textimg.save("files\\{}.jpg".format(text))
-#     brailleart = imagetobraille("files\\"+text+".jpg", size, inverse)    
-#     os.remove("files\\{}.jpg".format(text))
-#     return brailleart
+    textimg = Image.open('imagetobrailleartblankpic.jpg')
+    d1 = ImageDraw.Draw(textimg)
+    myFont = ImageFont.truetype(font_location, 100)
+    d1.text((0, 0), text, fill =(0, 0, 0),font = myFont)
+
+    textimg.save("{}.jpg".format(text))
+    brailleart = imagetobraille(text+".jpg", size, inverse) 
+    textimg.show()   
+    os.remove("{}.jpg".format(text))
+    os.remove("imagetobrailleartblankpic.jpg")
+    return brailleart

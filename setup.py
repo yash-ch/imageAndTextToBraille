@@ -10,7 +10,7 @@ classifiers = [
 
 setup(
     name="imagetobrailleart",
-    version="0.0.5.4",
+    version="0.0.6",
     description="To convert any image or text into braille art",
     long_description=open('README.md').read(),
     long_description_content_type ="text/markdown",
